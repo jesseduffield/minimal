@@ -86,7 +86,7 @@ func clean(s string) string {
 // (relevant for matching patterns that begin with "/") is assumed to be the
 // current working directory.
 func (ign *IgnoreList) AppendGlob(s string) error {
-	g, err := glob.Compile(clean(s))
+	g, err := glob.Compile(clean(s), '/')
 	if err == nil {
 		ign.files[0].globs = append(ign.files[0].globs, g)
 	}
@@ -160,7 +160,7 @@ func (ign *IgnoreList) append(path string, dir []string) error {
 		if s == "" || s[0] == '#' {
 			continue
 		}
-		g, err := glob.Compile(toRelpath(clean(s), dir, ign.cwd))
+		g, err := glob.Compile(toRelpath(clean(s), dir, ign.cwd), '/')
 		if err != nil {
 			return err
 		}
@@ -243,6 +243,9 @@ func isPrefix(abspath, dir []string) bool {
 }
 
 func (ign *IgnoreList) match(path string, info os.FileInfo) bool {
+	if path == "." {
+		return false
+	}
 	ss := make([]string, 0, 4)
 	base := filepath.Base(path)
 	ss = append(ss, path)

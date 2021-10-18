@@ -19,6 +19,10 @@ func TestEverything(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+	err = ign.AppendGlob(".*")
+	if err != nil {
+		panic(err)
+	}
 	expected := [...]string{
 		"testfs",
 		"testfs/eee",
@@ -26,6 +30,11 @@ func TestEverything(t *testing.T) {
 		"testfs/test.ou",
 		"testfs/testdir",
 	}
+
+	if ign.Match(".") {
+		t.Error("Match(.) should not match")
+	}
+
 	actual := make([]string, 0, 3)
 	ign.Walk(
 		"../gitignore/testfs",
